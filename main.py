@@ -1,39 +1,69 @@
 '''App'''
 import flet as ft
-from usd_mayorista import usd_mayorista_value
+from bcra import usd_mayorista_value, usd_mayorista_fecha, usd_minorista_value, usd_minorista_fecha  # type: ignore
 
 
 def main(page: ft.Page):
     'main'
+    ######### Variables #############
+    usd_mayv = usd_mayorista_value()
+    usd_mayf = usd_mayorista_fecha()
+    usd_minv = usd_minorista_value()
+    usd_minf = usd_minorista_fecha()
+    #################################
+    page.adaptive = True
     page.bgcolor = '#000000'
-    page.window_height = 768
     page.window_width = 432
+    page.window_height = 768
+    page.horizontal_alignment = ft.MainAxisAlignment.CENTER
 
-    def reload_button(e):  # pylint: disable=unused-argument
-        usd_mayorista.update()
-        page.update()
+    title_separator = ft.Column(
+        [
+            ft.Row(
+                [
+                    ft.IconButton(ft.icons.MENU),
+                    ft.Text('DATA', text_align='center',
+                            expand=True, weight=ft.FontWeight.BOLD, color='indigo', size=20),
+                    ft.IconButton(ft.icons.REFRESH, on_click=page.update())
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            ft.Divider(color='indigo')
+        ], spacing=0
+    )
 
-    page.appbar = ft.AppBar(
-        title=ft.Text(value='ECONOMY DATA', text_align='center',
-                      italic=True, weight='bold', size=20, color='indigo999'),
-        center_title=True,
-        bgcolor=ft.colors.BLACK,
-        actions=[ft.Container(
-            content=ft.IconButton(ft.icons.REFRESH_ROUNDED,
-                                  on_click=reload_button)
-        )
-
+    table = ft.Column(
+        [
+            ft.Row(  # Enunciado
+                [
+                    ft.Text('Nombre', expand=True, text_align='center'),
+                    ft.Text('Valor', text_align='center', width=65),
+                    ft.Text('Spread', text_align='center', width=65),
+                    ft.Text('Actualizado', text_align='center', width=75)
+                ], alignment=ft.MainAxisAlignment.CENTER, adaptive=True
+            ),
+            ft.Row(  # USD Mayorista
+                [
+                    ft.Text('USD Mayorista', expand=True, text_align='center'),
+                    ft.Text(usd_mayv, text_align='center', width=65),
+                    ft.Text('---', text_align='center', width=65),
+                    ft.Text(usd_mayf, text_align='center', width=75)
+                ], alignment=ft.MainAxisAlignment.CENTER, adaptive=True
+            ),
+            ft.Row(  # USD Minorista
+                [
+                    ft.Text('USD Minorista', expand=True, text_align='center'),
+                    ft.Text(usd_minv, text_align='center', width=65),
+                    ft.Text(f'{round(float(usd_minv)/float(usd_mayv)
+                            * 100-100, 2)} %', text_align='center', width=65),
+                    ft.Text(usd_minf, text_align='center', width=75)
+                ], alignment=ft.MainAxisAlignment.CENTER, adaptive=True
+            )
         ]
     )
 
-    usd_mayorista = ft.Row(
-        [
-            ft.Text(value='USD Mayorista:', weight='bold', text_align='right'),
-            ft.Text(value=usd_mayorista_value)
-        ], alignment=ft.MainAxisAlignment.CENTER, spacing=100
-    )
+    # page.on_resize = lambda e: table.width = e.control.width
 
-    page.add(usd_mayorista)
+    page.add(title_separator)
+    page.add(table)
 
 
 ft.app(main)
