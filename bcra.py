@@ -5,8 +5,8 @@ import urllib3
 
 urllib3.disable_warnings()
 
-url = 'https://www.bcra.gob.ar/'
-url_request = requests.get(url, timeout=5, verify=False)
+URL = 'https://www.bcra.gob.ar/'
+url_request = requests.get(URL, timeout=5, verify=False)
 html_request = BeautifulSoup(url_request.text, 'html.parser')
 
 
