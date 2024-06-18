@@ -4,12 +4,12 @@ import flet as ft
 from bcra import (usd_mayorista_value, usd_mayorista_fecha,
                   usd_minorista_value, usd_minorista_fecha)
 
-# usd_mayv, usd_mayf = 500, '15/06/2024'
-# usd_minv, usd_minf = 500, '15/06/2024'
-# usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
+usd_mayv, usd_mayf = 500, '15/06/2024'
+usd_minv, usd_minf = 500, '15/06/2024'
+usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
 
 
-class TableText(ft.Text):
+class TableText(ft.Text):   # Texto Tablas
     'table_text'
 
     def __init__(self, text, weight='normal', expand=False, width=70, text_align='center'):
@@ -21,7 +21,7 @@ class TableText(ft.Text):
         self.weight = weight
 
 
-class Rows(ft.Row):
+class Rows(ft.Row):  # Filas Tablas
     'rows'
 
     def __init__(self, controls, aligment=ft.MainAxisAlignment.SPACE_BETWEEN, adaptive=True):
@@ -34,13 +34,14 @@ class Rows(ft.Row):
 def main(page: ft.Page):
     'main'
 
-    # VALORES#
+    # VALORES #
 
-    usd_mayv, usd_mayf = usd_mayorista_value(), usd_mayorista_fecha()
-    usd_minv, usd_minf = usd_minorista_value(), usd_minorista_fecha()
-    usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
+    # usd_mayv, usd_mayf = usd_mayorista_value(), usd_mayorista_fecha()
+    # usd_minv, usd_minf = usd_minorista_value(), usd_minorista_fecha()
+    # usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
+    ######################################################################
 
-    # RELOAD FUNCTION#
+    # RELOAD FUNCTION #
 
     counter = 10
 
@@ -49,13 +50,19 @@ def main(page: ft.Page):
         page.clean()
         main(page)
 
-    # Windows Parameters#
+    ######################################################################
+
+    # WINDOWS PARAMETERS #
 
     page.window_width = 432
     page.window_height = 768
     page.window_resizable = False
 
-    # Main code#
+    ######################################################################
+
+    # MAIN CODE #
+
+    c_time = time.localtime()
 
     page.adaptive = True
     page.bgcolor = '#000000'
@@ -66,7 +73,9 @@ def main(page: ft.Page):
         title=ft.Text('DATA', size=15, text_align='Center', weight='bold'),
         center_title=True,
         actions=[
-            contador := ft.Text(10, size=15, text_align='Center', weight='bold'),
+            ft.Text(f'{c_time.tm_hour}:{c_time.tm_min}',
+                    size=15, weight='bold'),
+            contador := ft.Text(f' ({counter})', size=15, text_align='Center', weight='bold'),
             boton := ft.IconButton(
                 ft.icons.REFRESH,
                 visual_density=ft.ThemeVisualDensity.COMPACT,
@@ -383,13 +392,16 @@ def main(page: ft.Page):
     page.add(app_bar)
     page.add(scroll_table)
 
-    # Contador #
+    ######################################################################
+
+    # CONTADOR #
+
     contador.visible = True
 
     while True:
         time.sleep(1)
         counter -= 1
-        contador.value = counter
+        contador.value = f' ({counter})'
         page.update()
         if counter == 0:
             break
@@ -397,8 +409,9 @@ def main(page: ft.Page):
     boton.disabled = False
     contador.visible = False
 
+    ######################################################################
+
     page.update()
-    # Contador #
 
 
 ft.app(main)
