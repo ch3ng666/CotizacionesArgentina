@@ -2,11 +2,13 @@
 import time
 import flet as ft
 from bcra import (usd_mayorista_value, usd_mayorista_fecha,
-                  usd_minorista_value, usd_minorista_fecha)
-
-usd_mayv, usd_mayf = 500, '15/06/2024'
-usd_minv, usd_minf = 500, '15/06/2024'
-usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
+                  usd_minorista_value, usd_minorista_fecha,
+                  tasa_politica_monetaria_value, tasa_politica_monetaria_fecha,
+                  plazo_fijo_value, plazo_fijo_fecha,
+                  inflacion_value, inflacion_fecha,
+                  inflacion_inter_value, inflacion_inter_fecha,
+                  inflacion_esperada_value, inflacion_esperada_fecha)
+from investing import inf_ano_pasado
 
 
 class TableText(ft.Text):   # Texto Tablas
@@ -36,10 +38,14 @@ def main(page: ft.Page):
 
     # VALORES #
 
-    # usd_mayv, usd_mayf = usd_mayorista_value(), usd_mayorista_fecha()
-    # usd_minv, usd_minf = usd_minorista_value(), usd_minorista_fecha()
-    # usd_minv_spread = round(float(usd_minv)/float(usd_mayv) * 100-100, 2)
-    ######################################################################
+    usd_mayv, usd_mayf = usd_mayorista_value(), usd_mayorista_fecha()
+    usd_minv, usd_minf = usd_minorista_value(), usd_minorista_fecha()
+    tp_monv, tp_monf = tasa_politica_monetaria_value(), tasa_politica_monetaria_fecha()
+    pf_v, pf_f = plazo_fijo_value(), plazo_fijo_fecha()
+    inf_v, inf_f = inflacion_value(), inflacion_fecha()
+    inf_interv, inf_interf = inflacion_inter_value(), inflacion_inter_fecha()
+    inf_espv, inf_espf = inflacion_esperada_value(), inflacion_esperada_fecha()
+    usd_infv, usd_inff = inf_ano_pasado(), usd_mayorista_fecha()
 
     # RELOAD FUNCTION #
 
@@ -194,7 +200,8 @@ def main(page: ft.Page):
                                 ft.Text('-', color='indigo'),
                                 TableText(usd_minv),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText(
+                                    f'{round(float(usd_minv)/float(usd_mayv), 2)*100-100} %'),
                                 ft.Text('-', color='indigo'),
                                 TableText(usd_minf, width=95)
                             ]
@@ -203,31 +210,31 @@ def main(page: ft.Page):
                             [
                                 TableText('USD MEP', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # USD CCL GD30
                             [
                                 TableText('USD CCL GD30', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # USD Solidario
                             [
                                 TableText('USD Solidario', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(round(float(usd_minv)*1.6, 2)),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('60 %'),
                                 ft.Text('-', color='indigo'),
                                 TableText(usd_minf, width=95)
                             ]
@@ -236,33 +243,33 @@ def main(page: ft.Page):
                             [
                                 TableText('USD Crypto', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # USD Blue
                             [
                                 TableText('USD Blue', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # Atraso Cambiario (USD)
                             [
                                 TableText('USD Inflacion', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(round(float(usd_infv) * (float(inf_interv)/100+1)), 2),  # nopep8
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText(usd_inff, width=95)
                             ]
                         ),
                         ft.Divider(thickness=2, color='indigo',
@@ -271,44 +278,44 @@ def main(page: ft.Page):
                             [
                                 TableText('EUR Mayorista', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # EUR Minorista
                             [
                                 TableText('EUR Minorista', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # EUR Crypto
                             [
                                 TableText('EUR Crypto', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                         Rows(  # EUR Blue
                             [
                                 TableText('EUR Blue', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
+                                TableText(''),
                                 ft.Text('-', color='indigo'),
-                                TableText(f'{usd_minv_spread} %'),
+                                TableText('%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
+                                TableText('', width=95)
                             ]
                         ),
                     ], spacing=1
@@ -341,27 +348,27 @@ def main(page: ft.Page):
                             [
                                 TableText('Tasa Interés', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText('---'),
+                                TableText(f'{tp_monv}%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
+                                TableText(tp_monf, width=95)
                             ]
                         ),
                         Rows(  # Plazo Fijo 30D
                             [
                                 TableText('Plazo Fijo 30D', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText('---'),
+                                TableText(f'{pf_v}%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
+                                TableText(pf_f, width=95)
                             ]
                         ),
                         Rows(  # Inflación
                             [
                                 TableText('Inflacion', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText('---'),
+                                TableText(f'{inf_v}%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
+                                TableText(inf_f, width=95)
                             ]
                         ),
                         Rows(  # Inflacion Interanual
@@ -369,19 +376,19 @@ def main(page: ft.Page):
                                 TableText(
                                     'Inflacion Interanual', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText('---'),
+                                TableText(f'{inf_interv}%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
+                                TableText(inf_interf, width=95)
                             ]
                         ),
-                        Rows(  # Inflacion Anualizada
+                        Rows(  # Inflacion Esperada
                             [
                                 TableText(
-                                    'Inflacion Anualizada', expand=True),
+                                    'Inflacion Esperada (12M)', expand=True),
                                 ft.Text('-', color='indigo'),
-                                TableText('---'),
+                                TableText(f'{inf_espv}%'),
                                 ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
+                                TableText(inf_espf, width=95)
                             ]
                         ),
                     ], spacing=1
