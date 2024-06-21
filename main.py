@@ -1,4 +1,4 @@
-'''App'''
+'''CotizacionesArgentina'''
 import time
 import flet as ft
 from bcra import (usd_mayorista_value, usd_mayorista_fecha,
