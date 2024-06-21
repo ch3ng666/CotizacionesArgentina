@@ -9,6 +9,8 @@ from bcra import (usd_mayorista_value, usd_mayorista_fecha,
                   inflacion_inter_value, inflacion_inter_fecha,
                   inflacion_esperada_value, inflacion_esperada_fecha)
 from investing import inf_ano_pasado
+from dolarhoy import (usd_mepcclcryp_fechas, usd_mep_value,
+                      usd_crypto_value, usd_ccl_value, usd_blue_value)
 
 
 class TableText(ft.Text):   # Texto Tablas
@@ -46,10 +48,13 @@ def main(page: ft.Page):
     inf_interv, inf_interf = inflacion_inter_value(), inflacion_inter_fecha()
     inf_espv, inf_espf = inflacion_esperada_value(), inflacion_esperada_fecha()
     usd_infv, usd_inff = inf_ano_pasado(), usd_mayorista_fecha()
+    usd_mepcclcrypf = usd_mepcclcryp_fechas()
+    usd_mepv, usd_crypv = usd_mep_value(), usd_crypto_value()
+    usd_cclv, usd_bluev = usd_ccl_value(), usd_blue_value()
 
     # RELOAD FUNCTION #
 
-    counter = 10
+    counter = 60
 
     def reload_page(e):  # pylint: disable=unused-argument
         'reload_page'
@@ -76,12 +81,13 @@ def main(page: ft.Page):
     page.padding = 10
 
     app_bar = ft.AppBar(  # AppBar
-        title=ft.Text('DATA', size=15, text_align='Center', weight='bold'),
-        center_title=True,
+        title=ft.Text('CotizacionesArgentina', size=15,
+                      text_align='Center', weight='bold'),
+        center_title=False,
         actions=[
-            ft.Text(f'{c_time.tm_hour}:{c_time.tm_min}',
-                    size=15, weight='bold'),
-            contador := ft.Text(f' ({counter})', size=15, text_align='Center', weight='bold'),
+            ft.Text(f'Actualizado: {c_time.tm_hour}:{c_time.tm_min}',
+                    size=10, weight='bold'),
+            contador := ft.Text(f' ({counter})', size=10, text_align='Center', weight='bold'),
             boton := ft.IconButton(
                 ft.icons.REFRESH,
                 visual_density=ft.ThemeVisualDensity.COMPACT,
@@ -95,306 +101,325 @@ def main(page: ft.Page):
 
     boton.disabled = True
 
-    scroll_table = ft.Column(  # Tablas
+    stack_tables = ft.Stack(  # pylint: disable=unused-variable
         [
-            ft.Container(  # Datos Financieros
-                content=ft.Text('Datos Financieros', color='indigo',
-                                size=15, weight=ft.FontWeight.BOLD),
-                alignment=ft.alignment.center,
-                margin=ft.margin.all(0),
-                border=ft.border.all(1, 'indigo'),
-                border_radius=ft.border_radius.all(10),
-                bgcolor='#25253370',
-            ),
-            ft.Container(  # Tabla Datos Financieros
-                content=ft.Column(
-                    [
-                        Rows(  # Enunciado
-                            [
-                                TableText('  Nombre', expand=True,
-                                           weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Valor', weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Actualizado', width=95, weight='bold')  # nopep8
-                            ]
-                        ), ft.Divider(color='indigo'),
-                        Rows(  # Riesgo Pais
-                            [
-                                TableText('Riesgo Pais', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText('---'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
-                            ]
-                        ),
-                        Rows(  # Calificación S&P
-                            [
-                                TableText('Calificación S&P', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText('---'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
-                            ]
-                        ),
-                        Rows(  # Merval
-                            [
-                                TableText('Merval', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText('---'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
-                            ]
-                        ),
-                        Rows(  # Merval USD
-                            [
-                                TableText('Merval USD', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText('---'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
-                            ]
-                        ),
-                    ], spacing=1
-                ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
-            ),
-            ft.Container(  # Cotizaciones
-                content=ft.Text('Cotizaciones', color='indigo',
-                                size=15, weight=ft.FontWeight.BOLD),
-                alignment=ft.alignment.center,
-                margin=ft.margin.all(0),
-                border=ft.border.all(1, 'indigo'),
-                border_radius=ft.border_radius.all(10),
-                bgcolor='#25253370',
-            ),
-            ft.Container(  # Tabla Cotizaciones
-                content=ft.Column(
-                    [
-                        Rows(  # Enunciado
-                            [
-                                TableText('  Nombre', expand=True,
-                                           weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Valor', weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Spread', weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Actualizado',
-                                           width=95, weight='bold')
-                            ]
-                        ), ft.Divider(color='indigo'),
-                        Rows(  # USD Mayorista
-                            [
-                                TableText('USD Mayorista', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayv),
-                                ft.Text('-', color='indigo'),
-                                TableText('---'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_mayf, width=95)
-                            ]
-                        ),
-                        Rows(  # USD Minorista
-                            [
-                                TableText('USD Minorista', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_minv),
-                                ft.Text('-', color='indigo'),
-                                TableText(
-                                    f'{round(float(usd_minv)/float(usd_mayv), 2)*100-100} %'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
-                            ]
-                        ),
-                        Rows(  # USD MEP
-                            [
-                                TableText('USD MEP', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # USD CCL GD30
-                            [
-                                TableText('USD CCL GD30', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # USD Solidario
-                            [
-                                TableText('USD Solidario', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(round(float(usd_minv)*1.6, 2)),
-                                ft.Text('-', color='indigo'),
-                                TableText('60 %'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_minf, width=95)
-                            ]
-                        ),
-                        Rows(  # USD Crypto
-                            [
-                                TableText('USD Crypto', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # USD Blue
-                            [
-                                TableText('USD Blue', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # Atraso Cambiario (USD)
-                            [
-                                TableText('USD Inflacion', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(round(float(usd_infv) * (float(inf_interv)/100+1)), 2),  # nopep8
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(usd_inff, width=95)
-                            ]
-                        ),
-                        ft.Divider(thickness=2, color='indigo',
-                                   trailing_indent=20, leading_indent=20, opacity=0.5),
-                        Rows(  # EUR Mayorista
-                            [
-                                TableText('EUR Mayorista', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # EUR Minorista
-                            [
-                                TableText('EUR Minorista', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # EUR Crypto
-                            [
-                                TableText('EUR Crypto', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                        Rows(  # EUR Blue
-                            [
-                                TableText('EUR Blue', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(''),
-                                ft.Text('-', color='indigo'),
-                                TableText('%'),
-                                ft.Text('-', color='indigo'),
-                                TableText('', width=95)
-                            ]
-                        ),
-                    ], spacing=1
-                ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
-            ),
-            ft.Container(  # Tasas
-                content=ft.Text('Tasas', color='indigo',
-                                size=15, weight=ft.FontWeight.BOLD),
-                alignment=ft.alignment.center,
-                margin=ft.margin.all(0),
-                border=ft.border.all(1, 'indigo'),
-                border_radius=ft.border_radius.all(10),
-                bgcolor='#25253370',
-            ),
-            ft.Container(  # Tabla Tasas
-                content=ft.Column(
-                    [
-                        Rows(  # Enunciado
-                            [
-                                TableText('  Nombre', expand=True,
-                                           weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Valor', weight='bold'),
-                                ft.Text('-', color='indigo'),
-                                TableText('Actualizado',
-                                           width=95, weight='bold')
-                            ]
-                        ), ft.Divider(color='indigo'),
-                        Rows(  # Tasa Interés
-                            [
-                                TableText('Tasa Interés', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(f'{tp_monv}%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(tp_monf, width=95)
-                            ]
-                        ),
-                        Rows(  # Plazo Fijo 30D
-                            [
-                                TableText('Plazo Fijo 30D', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(f'{pf_v}%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(pf_f, width=95)
-                            ]
-                        ),
-                        Rows(  # Inflación
-                            [
-                                TableText('Inflacion', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(f'{inf_v}%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(inf_f, width=95)
-                            ]
-                        ),
-                        Rows(  # Inflacion Interanual
-                            [
-                                TableText(
-                                    'Inflacion Interanual', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(f'{inf_interv}%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(inf_interf, width=95)
-                            ]
-                        ),
-                        Rows(  # Inflacion Esperada
-                            [
-                                TableText(
-                                    'Inflacion Esperada (12M)', expand=True),
-                                ft.Text('-', color='indigo'),
-                                TableText(f'{inf_espv}%'),
-                                ft.Text('-', color='indigo'),
-                                TableText(inf_espf, width=95)
-                            ]
-                        ),
-                    ], spacing=1
-                ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
-            )
-        ], scroll=ft.ScrollMode.AUTO, expand=True, spacing=5)
+        scroll_table := ft.Column(  # Tablas
+            [
+                ft.Container(  # Datos Financieros
+                    content=ft.Text('Datos Financieros', color='indigo',
+                                    size=15, weight=ft.FontWeight.BOLD),
+                    alignment=ft.alignment.center,
+                    margin=ft.margin.all(0),
+                    border=ft.border.all(1, 'indigo'),
+                    border_radius=ft.border_radius.all(10),
+                    bgcolor='#25253370',
+                ),
+                ft.Container(  # Tabla Datos Financieros
+                    content=ft.Column(
+                        [
+                            Rows(  # Enunciado
+                                [
+                                    TableText('  Nombre', expand=True,
+                                            weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Valor', weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Actualizado', width=95, weight='bold')  # nopep8
+                                ]
+                            ), ft.Divider(color='indigo'),
+                            Rows(  # Riesgo Pais
+                                [
+                                    TableText('Riesgo Pais', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('---'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # Calificación S&P
+                                [
+                                    TableText('Calificación S&P',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('---'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # Merval
+                                [
+                                    TableText('Merval', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('---'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # Merval USD
+                                [
+                                    TableText('Merval USD', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('---'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                        ], spacing=1
+                    ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
+                ),
+                ft.Container(  # Cotizaciones
+                    content=ft.Text('Cotizaciones', color='indigo',
+                                    size=15, weight=ft.FontWeight.BOLD),
+                    alignment=ft.alignment.center,
+                    margin=ft.margin.all(0),
+                    border=ft.border.all(1, 'indigo'),
+                    border_radius=ft.border_radius.all(10),
+                    bgcolor='#25253370',
+                ),
+                ft.Container(  # Tabla Cotizaciones
+                    content=ft.Column(
+                        [
+                            Rows(  # Enunciado
+                                [
+                                    TableText('  Nombre', expand=True,
+                                            weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Valor', weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Spread', weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Actualizado',
+                                            width=95, weight='bold')
+                                ]
+                            ), ft.Divider(color='indigo'),
+                            Rows(  # USD Mayorista
+                                [
+                                    TableText('USD Mayorista',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mayv),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('---'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mayf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD Minorista
+                                [
+                                    TableText('USD Minorista',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_minv),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        f'{round(float(usd_minv)/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_minf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD MEP
+                                [
+                                    TableText('USD MEP', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mepv),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        f'{round(float(usd_mepv)/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mepcclcrypf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD CCL GD30
+                                [
+                                    TableText('USD CCL GD30', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_cclv),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        f'{round(float(usd_cclv)/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mepcclcrypf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD Solidario
+                                [
+                                    TableText('USD Solidario',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        round(float(usd_minv)*1.6, 2)),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('60 %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_minf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD Crypto
+                                [
+                                    TableText('USD Crypto', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_crypv),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        f'{round(float(usd_crypv)/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mepcclcrypf, width=95)
+                                ]
+                            ),
+                            Rows(  # USD Blue
+                                [
+                                    TableText('USD Blue', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_bluev),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(
+                                        f'{round(float(usd_bluev)/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_mepcclcrypf, width=95)
+                                ]
+                            ),
+                            Rows(  # Atraso Cambiario (USD)
+                                [
+                                    TableText('USD Inflacion',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(round(float(usd_infv) * (float(inf_interv)/100+1)), 2),  # nopep8
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{round(
+                                        (float(usd_infv) * (float(inf_interv)/100+1))/float(usd_mayv), 2)*100-100} %'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(usd_inff, width=95)
+                                ]
+                            ),
+                            ft.Divider(thickness=2, color='indigo',
+                                    trailing_indent=20, leading_indent=20, opacity=0.5),
+                            Rows(  # EUR Mayorista
+                                [
+                                    TableText('EUR Mayorista',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(''),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # EUR Minorista
+                                [
+                                    TableText('EUR Minorista',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(''),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # EUR Crypto
+                                [
+                                    TableText('EUR Crypto', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(''),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                            Rows(  # EUR Blue
+                                [
+                                    TableText('EUR Blue', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(''),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('', width=95)
+                                ]
+                            ),
+                        ], spacing=1
+                    ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
+                ),
+                ft.Container(  # Tasas
+                    content=ft.Text('Tasas', color='indigo',
+                                    size=15, weight=ft.FontWeight.BOLD),
+                    alignment=ft.alignment.center,
+                    margin=ft.margin.all(0),
+                    border=ft.border.all(1, 'indigo'),
+                    border_radius=ft.border_radius.all(10),
+                    bgcolor='#25253370',
+                ),
+                ft.Container(  # Tabla Tasas
+                    content=ft.Column(
+                        [
+                            Rows(  # Enunciado
+                                [
+                                    TableText('  Nombre', expand=True,
+                                            weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Valor', weight='bold'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText('Actualizado',
+                                            width=95, weight='bold')
+                                ]
+                            ), ft.Divider(color='indigo'),
+                            Rows(  # Tasa Interés
+                                [
+                                    TableText('Tasa Interés', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{tp_monv}%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(tp_monf, width=95)
+                                ]
+                            ),
+                            Rows(  # Plazo Fijo 30D
+                                [
+                                    TableText('Plazo Fijo 30D',
+                                                expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{pf_v}%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(pf_f, width=95)
+                                ]
+                            ),
+                            Rows(  # Inflación
+                                [
+                                    TableText('Inflacion', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{inf_v}%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(inf_f, width=95)
+                                ]
+                            ),
+                            Rows(  # Inflacion Interanual
+                                [
+                                    TableText(
+                                        'Inflacion Interanual', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{inf_interv}%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(inf_interf, width=95)
+                                ]
+                            ),
+                            Rows(  # Inflacion Esperada
+                                [
+                                    TableText(
+                                        'Inflacion Esperada (12M)', expand=True),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(f'{inf_espv}%'),
+                                    ft.Text('-', color='indigo'),
+                                    TableText(inf_espf, width=95)
+                                ]
+                            ),
+                        ], spacing=1
+                    ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
+                )
+            ], scroll=ft.ScrollMode.AUTO, spacing=5),
+        ################ agregar dialogo#####################
+        ]
+    )
 
     page.add(app_bar)
     page.add(scroll_table)

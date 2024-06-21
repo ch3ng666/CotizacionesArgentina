@@ -1,3 +1,4 @@
+################ INVESTING GET DATA ##################
 import requests
 from bs4 import BeautifulSoup
 import urllib3
@@ -11,7 +12,8 @@ html_request = BeautifulSoup(url_request.content, 'html.parser')
 
 
 def inf_ano_pasado():
-    'main'
-    start = str(html_request).find('52 semanas</div>')
-    value = str(html_request)[start+86:start+92].replace(',', '.')
-    return value
+    step1 = html_request.find(string='52 semanas',)
+    step2 = step1.parent.parent
+    step3 = step2.span.string
+    step4 = round(float(step3.replace(',', '.')), 2)
+    return step4
