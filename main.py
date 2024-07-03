@@ -1,16 +1,7 @@
 '''CotizacionesArgentina'''
 import time
 import flet as ft
-from bcra import (usd_mayorista_value, usd_mayorista_fecha,
-                  usd_minorista_value, usd_minorista_fecha,
-                  tasa_politica_monetaria_value, tasa_politica_monetaria_fecha,
-                  plazo_fijo_value, plazo_fijo_fecha,
-                  inflacion_value, inflacion_fecha,
-                  inflacion_inter_value, inflacion_inter_fecha,
-                  inflacion_esperada_value, inflacion_esperada_fecha)
-from investing import inf_ano_pasado
-from dolarhoy import (usd_mepcclcryp_fechas, usd_mep_value,
-                      usd_crypto_value, usd_ccl_value, usd_blue_value)
+from ambito_dg import ambito_data_get
 
 
 class TableText(ft.Text):   # Texto Tablas
@@ -40,17 +31,22 @@ def main(page: ft.Page):
 
     # VALORES #
 
-    usd_mayv, usd_mayf = usd_mayorista_value(), usd_mayorista_fecha()
-    usd_minv, usd_minf = usd_minorista_value(), usd_minorista_fecha()
-    tp_monv, tp_monf = tasa_politica_monetaria_value(), tasa_politica_monetaria_fecha()
-    pf_v, pf_f = plazo_fijo_value(), plazo_fijo_fecha()
-    inf_v, inf_f = inflacion_value(), inflacion_fecha()
-    inf_interv, inf_interf = inflacion_inter_value(), inflacion_inter_fecha()
-    inf_espv, inf_espf = inflacion_esperada_value(), inflacion_esperada_fecha()
-    usd_infv, usd_inff = inf_ano_pasado(), usd_mayorista_fecha()
-    usd_mepcclcrypf = usd_mepcclcryp_fechas()
-    usd_mepv, usd_crypv = usd_mep_value(), usd_crypto_value()
-    usd_cclv, usd_bluev = usd_ccl_value(), usd_blue_value()
+    cotizaciones = ambito_data_get()
+    usd_mayv, usd_mayf = cotizaciones['usd_mayorista']['Venta'], cotizaciones['usd_mayorista']['Fecha']
+    usd_minv, usd_minf = cotizaciones['usd_minorista']['Venta'], cotizaciones['usd_minorista']['Fecha']
+    usd_mepv, usd_mepf = cotizaciones['usd_mep']['Venta'], cotizaciones['usd_mep']['Fecha']
+    usd_cclv, usd_cclf = cotizaciones['usd_ccl']['Venta'], cotizaciones['usd_ccl']['Fecha']
+    usd_crypv, usd_crypf = cotizaciones['usd_crypto']['Venta'], cotizaciones['usd_crypto']['Fecha']
+    usd_bluev, usd_bluef = cotizaciones['usd_blue']['Venta'], cotizaciones['usd_blue']['Fecha']
+    usd_infv, usd_inff = cotizaciones['usd_inflacion']['Venta'], cotizaciones['usd_inflacion']['Fecha']
+    usd_solv, usd_solf = cotizaciones['usd_solidario']['Venta'], cotizaciones['usd_solidario']['Fecha']
+    eur_minv, eur_minf = cotizaciones['eur_minorista']['Venta'], cotizaciones['eur_minorista']['Fecha']
+    eur_bluev, eur_bluef = cotizaciones['eur_blue']['Venta'], cotizaciones['eur_blue']['Fecha']
+    tp_monv, tp_monf = 5, 5
+    pf_v, pf_f = 5, 5
+    inf_v, inf_f = 5, 5
+    inf_interv, inf_interf = 5, 5
+    inf_espv, inf_espf = 5, 5
 
     # RELOAD FUNCTION #
 
@@ -226,7 +222,7 @@ def main(page: ft.Page):
                                     TableText(
                                         f'{round(float(usd_mepv)/float(usd_mayv), 2)*100-100} %'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(usd_mepcclcrypf, width=95)
+                                    TableText(usd_mepf, width=95)
                                 ]
                             ),
                             Rows(  # USD CCL GD30
@@ -238,7 +234,7 @@ def main(page: ft.Page):
                                     TableText(
                                         f'{round(float(usd_cclv)/float(usd_mayv), 2)*100-100} %'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(usd_mepcclcrypf, width=95)
+                                    TableText(usd_cclf, width=95)
                                 ]
                             ),
                             Rows(  # USD Solidario
@@ -246,12 +242,11 @@ def main(page: ft.Page):
                                     TableText('USD Solidario',
                                                 expand=True),
                                     ft.Text('-', color='indigo'),
-                                    TableText(
-                                        round(float(usd_minv)*1.6, 2)),
+                                    TableText(usd_solv),
                                     ft.Text('-', color='indigo'),
                                     TableText('60 %'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(usd_minf, width=95)
+                                    TableText(usd_solf, width=95)
                                 ]
                             ),
                             Rows(  # USD Crypto
@@ -263,7 +258,7 @@ def main(page: ft.Page):
                                     TableText(
                                         f'{round(float(usd_crypv)/float(usd_mayv), 2)*100-100} %'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(usd_mepcclcrypf, width=95)
+                                    TableText(usd_crypf, width=95)
                                 ]
                             ),
                             Rows(  # USD Blue
@@ -275,18 +270,18 @@ def main(page: ft.Page):
                                     TableText(
                                         f'{round(float(usd_bluev)/float(usd_mayv), 2)*100-100} %'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(usd_mepcclcrypf, width=95)
+                                    TableText(usd_bluef, width=95)
                                 ]
                             ),
-                            Rows(  # Atraso Cambiario (USD)
+                            Rows(  # USD Inflacion
                                 [
                                     TableText('USD Inflacion',
                                                 expand=True),
                                     ft.Text('-', color='indigo'),
-                                    TableText(round(float(usd_infv) * (float(inf_interv)/100+1)), 2),  # nopep8
+                                    TableText(usd_infv),  # nopep8
                                     ft.Text('-', color='indigo'),
-                                    TableText(f'{round(
-                                        (float(usd_infv) * (float(inf_interv)/100+1))/float(usd_mayv), 2)*100-100} %'),
+                                    TableText(
+                                        f'{round(float(usd_infv)/float(usd_mayv), 2)*100-100} %'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_inff, width=95)
                                 ]
@@ -310,11 +305,11 @@ def main(page: ft.Page):
                                     TableText('EUR Minorista',
                                                 expand=True),
                                     ft.Text('-', color='indigo'),
-                                    TableText(''),
+                                    TableText(eur_minv),
                                     ft.Text('-', color='indigo'),
                                     TableText('%'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('', width=95)
+                                    TableText(eur_minf, width=95)
                                 ]
                             ),
                             Rows(  # EUR Crypto
@@ -332,11 +327,11 @@ def main(page: ft.Page):
                                 [
                                     TableText('EUR Blue', expand=True),
                                     ft.Text('-', color='indigo'),
-                                    TableText(''),
+                                    TableText(eur_bluev),
                                     ft.Text('-', color='indigo'),
                                     TableText('%'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('', width=95)
+                                    TableText(eur_bluef, width=95)
                                 ]
                             ),
                         ], spacing=1
@@ -416,7 +411,7 @@ def main(page: ft.Page):
                         ], spacing=1
                     ), border=ft.border.all(2, 'indigo'), border_radius=ft.border_radius.all(10)
                 )
-            ], scroll=ft.ScrollMode.AUTO, spacing=5),
+            ], scroll=ft.ScrollMode.ALWAYS, spacing=5)
         ################ agregar dialogo#####################
         ]
     )
