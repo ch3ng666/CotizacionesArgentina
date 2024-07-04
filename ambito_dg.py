@@ -1,22 +1,13 @@
 '########## Ambito GET DATA##########'
-import time
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
-chrome_options = Options()
-# chrome_options.add_argument("--headless")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-
-
-driver = webdriver.Chrome(options=chrome_options)
-URL = 'https://www.ambito.com/contenidos/dolar.html'
-driver.get(URL)
-time.sleep(2)
-url_request = driver.page_source
-driver.quit()
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    page.goto('https://www.ambito.com/contenidos/dolar.html', timeout=0)
+    url_request = page.content()
+    browser.close()
 
 html_request = BeautifulSoup(url_request, 'html.parser')
 html_prettified = html_request.prettify()
@@ -114,14 +105,10 @@ def ambito_data_get():
 
     usd_solidario = {'Compra': round(usd_min_compra*FC_DOLAR_SOLIDARIO, 2), 'Venta': round(usd_min_venta*FC_DOLAR_SOLIDARIO, 2), 'Fecha': usd_min_fecha}  # nopep8
 
-    #USD Inflacion
-
-    usd_inflacion = {'Compra': round(usd_may_compra*FC_DOLAR_INFLACION, 2), 'Venta': round(usd_may_venta*FC_DOLAR_INFLACION, 2), 'Fecha': usd_may_fecha}  # nopep8
-
-    ###COTIZACIONES###
+    ### COTIZACIONES###
 
     cotizaciones = {'usd_mayorista': usd_mayorista, 'usd_minorista': usd_minorista, 'usd_mep': usd_mep, 'usd_ccl': usd_ccl,
-                    'usd_solidario': usd_solidario, 'usd_crypto': usd_crypto, 'usd_blue': usd_blue, 'usd_inflacion': usd_inflacion, 'eur_minorista': eur_minorista, 'eur_blue': eur_blue}
+                    'usd_solidario': usd_solidario, 'usd_crypto': usd_crypto, 'usd_blue': usd_blue, 'eur_minorista': eur_minorista, 'eur_blue': eur_blue}
 
     return cotizaciones
 
