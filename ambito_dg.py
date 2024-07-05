@@ -3,14 +3,14 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(
+        executable_path='./chrome/chrome.exe', headless=True)
     page = browser.new_page()
     page.goto('https://www.ambito.com/contenidos/dolar.html', timeout=0)
     url_request = page.content()
     browser.close()
 
 html_request = BeautifulSoup(url_request, 'html.parser')
-html_prettified = html_request.prettify()
 
 # pylint: disable=C0301
 
@@ -18,7 +18,6 @@ html_prettified = html_request.prettify()
 # Value of Dolar Solidario, Dolar Inflacion, Euro Mayorista and Euro Crypto gets calculated.
 
 FC_DOLAR_SOLIDARIO = 1.57
-FC_DOLAR_INFLACION = 3.57  # ARREGLAR
 
 
 def ambito_data_get():
@@ -111,6 +110,3 @@ def ambito_data_get():
                     'usd_solidario': usd_solidario, 'usd_crypto': usd_crypto, 'usd_blue': usd_blue, 'eur_minorista': eur_minorista, 'eur_blue': eur_blue}
 
     return cotizaciones
-
-
-print(ambito_data_get())

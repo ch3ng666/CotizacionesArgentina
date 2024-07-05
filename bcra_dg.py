@@ -66,6 +66,3 @@ def bcra_data_get():
     }
 
     return tasas
-
-
-print(bcra_data_get())

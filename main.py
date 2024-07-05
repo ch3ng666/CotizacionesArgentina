@@ -3,7 +3,8 @@ import time
 import flet as ft
 from ambito_dg import ambito_data_get
 from bcra_dg import bcra_data_get
-# from investing import usd_ano_pasado
+from investing_dg import usd_ano_pasado
+from dmacro_dg import datosmacro_data_get
 
 # pylint: disable=C0301
 
@@ -11,25 +12,27 @@ from bcra_dg import bcra_data_get
 class TableText(ft.Text):   # Texto Tablas
     'table_text'
 
-    def __init__(self, text, weight='normal', expand=False, width=70, text_align='center'):
+    def __init__(self, text, weight='normal', expand=False, width=75, text_align='center', size=12):
         super().__init__()
         self.value = text
         self.expand = expand
         self.width = width
         self.text_align = text_align
         self.weight = weight
+        self.size = size
 
 
 class DateText(ft.Text):   # Texto Tablas
     'table_text'
 
-    def __init__(self, text, weight='normal', expand=False, width=95, text_align='center'):
+    def __init__(self, text, weight='normal', expand=False, width=115, text_align='center', size=12):
         super().__init__()
         self.value = text
         self.expand = expand
         self.width = width
         self.text_align = text_align
         self.weight = weight
+        self.size = size
 
 
 class Rows(ft.Row):  # Filas Tablas
@@ -47,7 +50,7 @@ def main(page: ft.Page):
 
     ### VALORES ###
 
-    # AMBITO #
+   # AMBITO #
 
     cotizaciones = ambito_data_get()
     usd_mayv, usd_mayf = cotizaciones['usd_mayorista']['Venta'], cotizaciones['usd_mayorista']['Fecha']
@@ -60,6 +63,13 @@ def main(page: ft.Page):
     eur_minv, eur_minf = cotizaciones['eur_minorista']['Venta'], cotizaciones['eur_minorista']['Fecha']
     eur_bluev, eur_bluef = cotizaciones['eur_blue']['Venta'], cotizaciones['eur_blue']['Fecha']
 
+    # DATOS MACRO #
+
+    datos = datosmacro_data_get()
+    sp = datos['S&P']
+    merval = round(datos['Merval'], -1)
+    merval_usd = round(datos['Merval']/float(usd_mayv), 2)
+
     # BCRA #
 
     tasas = bcra_data_get()
@@ -71,10 +81,10 @@ def main(page: ft.Page):
 
     # INVESTING
 
-    usd_anual = 250
+    usd_anual = usd_ano_pasado()
     usd_infv = round(
         usd_anual*(tasas['inflacion_interanual']['Value']/100+1), 2)
-    usd_inff = tasas['inflacion_interanual']['Value']  # nopep8
+    usd_inff = tasas['inflacion_interanual']['Fecha']  # nopep8
 
     # RELOAD FUNCTION #
 
@@ -149,12 +159,13 @@ def main(page: ft.Page):
                                     ft.Text('-', color='indigo'),
                                     TableText('Valor', weight='bold'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('Actualizado', width=95, weight='bold')  # nopep8
+                                    TableText('Actualizado', width=115, weight='bold')  # nopep8
                                 ]
                             ), ft.Divider(color='indigo'),
                             Rows(  # Riesgo Pais
                                 [
-                                    TableText('Riesgo Pais', expand=True),
+                                    TableText('   Riesgo Pais',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText('---'),
                                     ft.Text('-', color='indigo'),
@@ -163,28 +174,30 @@ def main(page: ft.Page):
                             ),
                             Rows(  # Calificación S&P
                                 [
-                                    TableText('Calificación S&P',
-                                                expand=True),
+                                    TableText('   Calificación S&P',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('---'),
+                                    TableText(sp),
                                     ft.Text('-', color='indigo'),
                                     DateText('')
                                 ]
                             ),
                             Rows(  # Merval
                                 [
-                                    TableText('Merval', expand=True),
+                                    TableText('   Merval', expand=True,
+                                              text_align='left'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('---'),
+                                    TableText(merval),
                                     ft.Text('-', color='indigo'),
                                     DateText('')
                                 ]
                             ),
                             Rows(  # Merval USD
                                 [
-                                    TableText('Merval USD', expand=True),
+                                    TableText('   Merval USD',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
-                                    TableText('---'),
+                                    TableText(merval_usd),
                                     ft.Text('-', color='indigo'),
                                     DateText('')
                                 ]
@@ -214,13 +227,13 @@ def main(page: ft.Page):
                                     TableText('Spread', weight='bold'),
                                     ft.Text('-', color='indigo'),
                                     TableText('Actualizado',
-                                            width=95, weight='bold')
+                                            width=115, weight='bold')
                                 ]
                             ), ft.Divider(color='indigo'),
                             Rows(  # USD Mayorista
                                 [
-                                    TableText('USD Mayorista',
-                                                expand=True),
+                                    TableText('   USD Mayorista',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_mayv),
                                     ft.Text('-', color='indigo'),
@@ -231,8 +244,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD Minorista
                                 [
-                                    TableText('USD Minorista',
-                                                expand=True),
+                                    TableText('   USD Minorista',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_minv),
                                     ft.Text('-', color='indigo'),
@@ -244,7 +257,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD MEP
                                 [
-                                    TableText('USD MEP', expand=True),
+                                    TableText('   USD MEP',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_mepv),
                                     ft.Text('-', color='indigo'),
@@ -256,7 +270,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD CCL GD30
                                 [
-                                    TableText('USD CCL GD30', expand=True),
+                                    TableText('   USD CCL GD30',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_cclv),
                                     ft.Text('-', color='indigo'),
@@ -268,8 +283,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD Solidario
                                 [
-                                    TableText('USD Solidario',
-                                                expand=True),
+                                    TableText('   USD Solidario',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_solv),
                                     ft.Text('-', color='indigo'),
@@ -280,7 +295,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD Crypto
                                 [
-                                    TableText('USD Crypto', expand=True),
+                                    TableText('   USD Crypto',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_crypv),
                                     ft.Text('-', color='indigo'),
@@ -292,7 +308,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD Blue
                                 [
-                                    TableText('USD Blue', expand=True),
+                                    TableText('   USD Blue',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_bluev),
                                     ft.Text('-', color='indigo'),
@@ -304,8 +321,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # USD Inflacion
                                 [
-                                    TableText('USD Inflacion',
-                                                expand=True),
+                                    TableText('   USD Inflacion',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(usd_infv),  # nopep8
                                     ft.Text('-', color='indigo'),
@@ -319,8 +336,8 @@ def main(page: ft.Page):
                                     trailing_indent=20, leading_indent=20, opacity=0.5),
                             Rows(  # EUR Mayorista
                                 [
-                                    TableText('EUR Mayorista',
-                                                expand=True),
+                                    TableText('   EUR Mayorista',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(''),
                                     ft.Text('-', color='indigo'),
@@ -331,8 +348,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # EUR Minorista
                                 [
-                                    TableText('EUR Minorista',
-                                                expand=True),
+                                    TableText('   EUR Minorista',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(eur_minv),
                                     ft.Text('-', color='indigo'),
@@ -343,7 +360,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # EUR Crypto
                                 [
-                                    TableText('EUR Crypto', expand=True),
+                                    TableText('   EUR Crypto',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(''),
                                     ft.Text('-', color='indigo'),
@@ -354,7 +372,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # EUR Blue
                                 [
-                                    TableText('EUR Blue', expand=True),
+                                    TableText('   EUR Blue',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(eur_bluev),
                                     ft.Text('-', color='indigo'),
@@ -386,12 +405,13 @@ def main(page: ft.Page):
                                     TableText('Valor', weight='bold'),
                                     ft.Text('-', color='indigo'),
                                     TableText('Actualizado',
-                                            width=95, weight='bold')
+                                            width=115, weight='bold')
                                 ]
                             ), ft.Divider(color='indigo'),
                             Rows(  # Tasa Interés
                                 [
-                                    TableText('Tasa Interés', expand=True),
+                                    TableText('   Tasa Interés',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(f'{tp_monv}%'),
                                     ft.Text('-', color='indigo'),
@@ -400,8 +420,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # Plazo Fijo 30D
                                 [
-                                    TableText('Plazo Fijo 30D',
-                                                expand=True),
+                                    TableText('   Plazo Fijo 30D',
+                                                expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(f'{pf_v}%'),
                                     ft.Text('-', color='indigo'),
@@ -410,7 +430,8 @@ def main(page: ft.Page):
                             ),
                             Rows(  # Inflación
                                 [
-                                    TableText('Inflacion', expand=True),
+                                    TableText('   Inflacion',
+                                              expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(f'{inf_v}%'),
                                     ft.Text('-', color='indigo'),
@@ -420,7 +441,7 @@ def main(page: ft.Page):
                             Rows(  # Inflacion Interanual
                                 [
                                     TableText(
-                                        'Inflacion Interanual', expand=True),
+                                        '   Inflacion Interanual', expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(f'{inf_interv}%'),
                                     ft.Text('-', color='indigo'),
@@ -430,7 +451,7 @@ def main(page: ft.Page):
                             Rows(  # Inflacion Esperada
                                 [
                                     TableText(
-                                        'Inflacion Esperada (12M)', expand=True),
+                                        '   Inflacion Esperada (12M)', expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
                                     TableText(f'{inf_espv}%'),
                                     ft.Text('-', color='indigo'),
