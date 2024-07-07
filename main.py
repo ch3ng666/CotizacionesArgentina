@@ -62,13 +62,8 @@ def main(page: ft.Page):
     usd_solv, usd_solf = cotizaciones['usd_solidario']['Venta'], cotizaciones['usd_solidario']['Fecha']
     eur_minv, eur_minf = cotizaciones['eur_minorista']['Venta'], cotizaciones['eur_minorista']['Fecha']
     eur_bluev, eur_bluef = cotizaciones['eur_blue']['Venta'], cotizaciones['eur_blue']['Fecha']
-
-    # DATOS MACRO #
-
-    datos = datosmacro_data_get()
-    sp = datos['S&P']
-    merval = round(datos['Merval'], -1)
-    merval_usd = round(datos['Merval']/float(usd_mayv), 2)
+    eur_cryv, eur_cryf = cotizaciones['eur_crypto']['Venta'], cotizaciones['eur_crypto']['Fecha']
+    eur_mayv, eur_mayf = cotizaciones['eur_may']['Venta'], cotizaciones['eur_may']['Fecha']
 
     # BCRA #
 
@@ -79,12 +74,21 @@ def main(page: ft.Page):
     inf_interv, inf_interf = tasas['inflacion_interanual']['Value'], tasas['inflacion_interanual']['Fecha']
     inf_espv, inf_espf = tasas['inflacion_esperada']['Value'], tasas['inflacion_esperada']['Fecha']
 
+    # DATOS MACRO #
+
+    datos = datosmacro_data_get()
+    sp, spf = datos['S&P'], tasas['tasa_politica_monetaria']['Fecha']
+    merval, mervalf = round(
+        datos['Merval'], -1), tasas['tasa_politica_monetaria']['Fecha']
+    merval_usd, merval_usdf = round(
+        datos['Merval']/float(usd_mayv), 2), tasas['tasa_politica_monetaria']['Fecha']
+
     # INVESTING
 
     usd_anual = usd_ano_pasado()
     usd_infv = round(
         usd_anual*(tasas['inflacion_interanual']['Value']/100+1), 2)
-    usd_inff = tasas['inflacion_interanual']['Fecha']  # nopep8
+    usd_inff = tasas['inflacion_interanual']['Fecha']
 
     # RELOAD FUNCTION #
 
@@ -179,7 +183,7 @@ def main(page: ft.Page):
                                     ft.Text('-', color='indigo'),
                                     TableText(sp),
                                     ft.Text('-', color='indigo'),
-                                    DateText('')
+                                    DateText(spf)
                                 ]
                             ),
                             Rows(  # Merval
@@ -189,7 +193,7 @@ def main(page: ft.Page):
                                     ft.Text('-', color='indigo'),
                                     TableText(merval),
                                     ft.Text('-', color='indigo'),
-                                    DateText('')
+                                    DateText(mervalf)
                                 ]
                             ),
                             Rows(  # Merval USD
@@ -199,7 +203,7 @@ def main(page: ft.Page):
                                     ft.Text('-', color='indigo'),
                                     TableText(merval_usd),
                                     ft.Text('-', color='indigo'),
-                                    DateText('')
+                                    DateText(merval_usdf)
                                 ]
                             ),
                         ], spacing=1
@@ -339,11 +343,11 @@ def main(page: ft.Page):
                                     TableText('   EUR Mayorista',
                                                 expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(''),
+                                    TableText(eur_mayv),
                                     ft.Text('-', color='indigo'),
                                     TableText('%'),
                                     ft.Text('-', color='indigo'),
-                                    DateText('')
+                                    DateText(eur_mayf)
                                 ]
                             ),
                             Rows(  # EUR Minorista
@@ -363,11 +367,11 @@ def main(page: ft.Page):
                                     TableText('   EUR Crypto',
                                               expand=True, text_align='left'),
                                     ft.Text('-', color='indigo'),
-                                    TableText(''),
+                                    TableText(eur_cryv),
                                     ft.Text('-', color='indigo'),
                                     TableText('%'),
                                     ft.Text('-', color='indigo'),
-                                    DateText('')
+                                    DateText(eur_cryf)
                                 ]
                             ),
                             Rows(  # EUR Blue

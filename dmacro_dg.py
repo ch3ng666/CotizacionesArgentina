@@ -1,4 +1,4 @@
-################ DATOSMACRO GET DATA ##################
+'################ DATOSMACRO GET DATA ##################'
 # Merval, Merval USD, S&P
 import re
 import requests
@@ -10,8 +10,8 @@ def datosmacro_data_get():
 
     # S&P
 
-    URL = 'https://datosmacro.expansion.com/paises/argentina'
-    url_request = requests.get(URL)
+    url = 'https://datosmacro.expansion.com/paises/argentina'
+    url_request = requests.get(url, timeout=5)
     html_request = BeautifulSoup(url_request.text, 'html.parser')
 
     step1 = html_request.find('a', href=re.compile('.ratings.'))
@@ -19,8 +19,8 @@ def datosmacro_data_get():
 
     # Merval
 
-    URL = 'https://datosmacro.expansion.com/bolsa/argentina'
-    url_request = requests.get(URL)
+    url = 'https://datosmacro.expansion.com/bolsa/argentina'
+    url_request = requests.get(url, timeout=5)
     html_request = BeautifulSoup(url_request.text, 'html.parser')
 
     merval = html_request.find('td', class_='numero').text

@@ -104,9 +104,35 @@ def ambito_data_get():
 
     usd_solidario = {'Compra': round(usd_min_compra*FC_DOLAR_SOLIDARIO, 2), 'Venta': round(usd_min_venta*FC_DOLAR_SOLIDARIO, 2), 'Fecha': usd_min_fecha}  # nopep8
 
-    ### COTIZACIONES###
+    # EUR Mayorista
 
-    cotizaciones = {'usd_mayorista': usd_mayorista, 'usd_minorista': usd_minorista, 'usd_mep': usd_mep, 'usd_ccl': usd_ccl,
-                    'usd_solidario': usd_solidario, 'usd_crypto': usd_crypto, 'usd_blue': usd_blue, 'eur_minorista': eur_minorista, 'eur_blue': eur_blue}
+    fc_euro_mayorista = ((usd_may_compra/usd_min_compra) +
+                         (usd_may_venta/usd_min_venta))/2
+    eur_mayorista = {'Compra': round(eur_min_compra*fc_euro_mayorista, 2),
+                     'Venta': round(eur_min_venta*fc_euro_mayorista, 2),
+                     'Fecha': eur_min_fecha}
+
+    # EUR Crypto
+
+    fc_euro_crypto = usd_cry_venta/usd_min_venta
+
+    eur_crypto = {'Venta': round(eur_min_venta*fc_euro_crypto, 2),
+                  'Fecha': usd_cry_fecha}
+
+    ### COTIZACIONES ###
+
+    cotizaciones = {
+        'usd_mayorista': usd_mayorista,
+        'usd_minorista': usd_minorista,
+        'usd_mep': usd_mep,
+        'usd_ccl': usd_ccl,
+        'usd_solidario': usd_solidario,
+        'usd_crypto': usd_crypto,
+        'usd_blue': usd_blue,
+        'eur_minorista': eur_minorista,
+        'eur_blue': eur_blue,
+        'eur_may': eur_mayorista,
+        'eur_crypto': eur_crypto,
+    }
 
     return cotizaciones

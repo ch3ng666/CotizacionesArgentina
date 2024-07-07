@@ -1,4 +1,4 @@
-################ INVESTING GET DATA ##################
+'Investing Data Get'
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +13,7 @@ html_request = BeautifulSoup(url_request.content, 'html.parser')
 
 
 def usd_ano_pasado():
+    'Dolar año pasado'
     step1 = html_request.find('div', string=re.compile('52 semanas'))
     step2 = step1.next_sibling
     step3 = step2.span.string
